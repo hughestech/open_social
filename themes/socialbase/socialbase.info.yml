@@ -30,10 +30,6 @@ base theme: bootstrap
 # The supported Drupal version.
 core: 8.x
 
-# The version number for the theme is optional. Quotes are needed because the
-# format is intepreted as a number and the trailing zero is lost when displayed.
-version: '2.1'
-
 # Libraries-extend is used to attach libraries to other libraries. If the
 # original library is conditionally included, the library it is extended with
 # will be included under the same conditions.
@@ -48,11 +44,15 @@ libraries-extend:
   #extend the core datepicker with a stylesheet and attach the listener
   core/jquery.ui.datepicker:
     - socialbase/form--timepicker
-  # attach the bootstrap library script and css component
+  # Attach the bootstrap library script and css component.
+  # Note that the socialbase library scripts needs to load first. That is
+  # why we added weights to the library JS files in socialbase.
   bootstrap/popover:
     - socialbase/popover
   core/drupal.dialog.ajax:
     - socialbase/modal
+  image_widget_crop/cropper.integration:
+    - socialbase/cropper.integration
 
 
 stylesheets-remove:
@@ -90,6 +90,10 @@ libraries-override:
     css:
       component:
         assets/vendor/jquery.ui/themes/base/dialog.css: false
+  core/jquery.ui.menu:
+    css:
+      component:
+        assets/vendor/jquery.ui/themes/base/menu.css: false
   system/base: false
   views/views.module: false
   classy/file: false
@@ -97,6 +101,7 @@ libraries-override:
     js:
       js/like_and_dislike_service.js: false
   like_and_dislike/icons: false
+  private_message/inbox_block: false
 
 # Libraries contain CSS and JavaScript files. The libraries setting is used to
 # globally add libraries, which means they will appear on every page. Libraries

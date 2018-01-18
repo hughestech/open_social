@@ -29,6 +29,13 @@ class FeatureContext extends RawMinkContext implements Context, SnippetAccepting
     }
 
     /**
+     * Keep track of all groups that are created so they can easily be removed.
+     *
+     * @var array
+     */
+    protected $groups = array();
+
+    /**
      * @BeforeScenario
      *
      * @param $event
@@ -74,6 +81,48 @@ class FeatureContext extends RawMinkContext implements Context, SnippetAccepting
     public function iFillInTheWysiwygEditor($instanceId, $text) {
       $instance = $this->getWysiwygInstance($instanceId);
       $this->getSession()->executeScript("$instance.setData(\"$text\");");
+    }
+
+    /**
+     * @When /^I click on the embed icon in the WYSIWYG editor$/
+     */
+    public function clickEmbedIconInWysiwygEditor() {
+
+      $cssSelector = 'a.cke_button__social_embed';
+
+      $session = $this->getSession();
+      $element = $session->getPage()->find(
+        'xpath',
+        $session->getSelectorsHandler()->selectorToXpath('css', $cssSelector)
+      );
+      if (null === $element) {
+        throw new \InvalidArgumentException(sprintf('Could not evaluate CSS Selector: "%s"', $cssSelector));
+      }
+
+      $element->click();
+    }
+
+    /**
+     * @Then /^The iframe in the body description should have the src "([^"]*)"$/
+     */
+    public function iFrameInBodyDescriptionShouldHaveTheSrc($src) {
+
+      $cssSelector = 'article .card__body .body-text iframe';
+
+      $session = $this->getSession();
+      $element = $session->getPage()->find(
+        'xpath',
+        $session->getSelectorsHandler()->selectorToXpath('css', $cssSelector)
+      );
+      if (null === $element) {
+        throw new \InvalidArgumentException(sprintf('Could not evaluate CSS Selector: "%s"', $cssSelector));
+      }
+
+      $iframe_source = $element->getAttribute('src');
+
+      if ($iframe_source !== $src) {
+        throw new \InvalidArgumentException(sprintf('The iframe does not have the src: "%s"', $src));
+      }
     }
 
     /**
@@ -167,6 +216,21 @@ class FeatureContext extends RawMinkContext implements Context, SnippetAccepting
       $this->iClickPostVisibilityDropdown();
 
     }
+
+    /**
+     * @When I select group :group
+     */
+    public function iSelectGroup($group) {
+
+      $option = $this->getGroupIdFromTitle($group);
+
+      if (!$option) {
+        throw new \InvalidArgumentException(sprintf('Could not find group for "%s"', $group));
+      }
+      $this->getSession()->getPage()->selectFieldOption('edit-groups', $option);
+
+    }
+
 
 
   /**
@@ -393,35 +457,34 @@ class FeatureContext extends RawMinkContext implements Context, SnippetAccepting
      */
     public function createGroups(TableNode $groupsTable) {
       foreach ($groupsTable->getHash() as $groupHash) {
-        $group = (object) $groupHash;
-        $this->groupCreate($group);
+        $groupFields = (object) $groupHash;
+        try {
+          $group = $this->groupCreate($groupFields);
+          $this->groups[$groupFields->title] = $group;
+        } catch (Exception $e) {
+
+        }
       }
     }
 
     /**
-     * @AfterScenario @search&&@groups
+     * Remove any groups that were created.
+     *
+     * @AfterScenario
      */
     public function cleanupGroups(AfterScenarioScope $scope) {
-      $query = \Drupal::entityQuery('group')
-        ->condition('label', array(
-          '%Behat test group title%'
-        ), 'LIKE');
-
-      $group_ids = $query->execute();
-
-      $groups = entity_load_multiple('group', $group_ids);
-
-      foreach ($groups as $group) {
-        $group->delete();
+      if (!empty($this->groups)) {
+        foreach ($this->groups as $group) {
+          $group->delete();
+        }
       }
-
     }
 
     /**
-     * Create a user.
+     * Create a group.
      *
      * @return object
-     *   The created user.
+     *   The created group.
      */
     public function groupCreate($group) {
 
@@ -444,7 +507,7 @@ class FeatureContext extends RawMinkContext implements Context, SnippetAccepting
 
       $group_object->save();
 
-      return $group;
+      return $group_object;
     }
 
     /**
@@ -455,6 +518,18 @@ class FeatureContext extends RawMinkContext implements Context, SnippetAccepting
      */
     public function openGroupStreamPage($group_title)
     {
+      $group_id = $this->getGroupIdFromTitle($group_title);
+      $page = '/group/' . $group_id . '/stream';
+
+      $this->visitPath($page);
+    }
+
+    /**
+     * @param $group_title
+     *
+     * @return null
+     */
+    public function getGroupIdFromTitle($group_title) {
 
       $query = \Drupal::entityQuery('group')
         ->condition('label', $group_title);
@@ -463,20 +538,15 @@ class FeatureContext extends RawMinkContext implements Context, SnippetAccepting
       $groups = entity_load_multiple('group', $group_ids);
 
       if (count($groups) > 1) {
-        throw new \Exception(sprintf("Multiple groups with title '%s' exists.", $group_title));
+        return NULL;
       }
       else {
         $group = reset($groups);
         if ($group->id() !== 0) {
           $group_id = $group->id();
         }
-        else {
-          throw new \Exception(sprintf("Group with group_title '%s' does not exist.", $group_title));
-        }
       }
-      $page = '/group/' . $group_id . '/stream';
-
-      $this->visitPath($page);
+      return $group_id;
     }
 
     /**
