@@ -362,7 +362,11 @@ function social_theme_setup(array &$install_state) {
     'chart_post',
     'business_profile',
     'bootstrap_patterns',
-    'static_page'
+    'static_page',
+    'article',
+    'message_example',
+    'openid_connect_rest',
+    'graphql'
   );
   \Drupal::service('module_installer')->install($modules);
 
