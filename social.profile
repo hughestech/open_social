@@ -361,7 +361,6 @@ function social_theme_setup(array &$install_state) {
     'ctools',
     'chart_post',
     'business_profile',
-    'bootstrap_patterns',
     'static_page',
     'article',
     'message_example',
@@ -371,7 +370,8 @@ function social_theme_setup(array &$install_state) {
     'metatag_open_graph',
     'opengraph_filter',
     'extlink_preview',
-    'custom_rules'
+    'custom_rules',
+    'trading_pattern'
   );
   \Drupal::service('module_installer')->install($modules);
 
