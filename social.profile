@@ -361,12 +361,23 @@ function social_theme_setup(array &$install_state) {
     'ctools',
     'chart_post',
     'business_profile',
-    'bootstrap_patterns',
     'static_page',
     'article',
     'message_example',
-    'openid_connect_rest',
-    'graphql'
+    'graphql',
+    'rules',
+    'metatag',
+    'metatag_open_graph',
+    'opengraph_filter',
+    'extlink_preview',
+    'custom_rules',
+    'trading_pattern',
+    'auto_entitylabel',
+    'open_id_connect',
+    'block_layout',
+    'paragraphs',
+    'paragraphs_type_permissions',
+    'graphql_core'
   );
   \Drupal::service('module_installer')->install($modules);
 

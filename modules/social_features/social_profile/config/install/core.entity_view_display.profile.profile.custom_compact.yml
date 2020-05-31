@@ -1,0 +1,76 @@
+langcode: en
+status: true
+dependencies:
+  config:
+    - core.entity_view_mode.profile.custom_compact
+    - field.field.profile.profile.field_cover_photo
+    - field.field.profile.profile.field_preferred_broker
+    - field.field.profile.profile.field_profile_address
+    - field.field.profile.profile.field_profile_expertise
+    - field.field.profile.profile.field_profile_first_name
+    - field.field.profile.profile.field_profile_function
+    - field.field.profile.profile.field_profile_image
+    - field.field.profile.profile.field_profile_interests
+    - field.field.profile.profile.field_profile_last_name
+    - field.field.profile.profile.field_profile_organization
+    - field.field.profile.profile.field_profile_phone_number
+    - field.field.profile.profile.field_profile_profile_tag
+    - field.field.profile.profile.field_profile_self_introduction
+    - field.field.profile.profile.field_profile_show_email
+    - profile.type.profile
+  module:
+    - ds
+third_party_settings:
+  ds:
+    layout:
+      id: ds_1col
+      library: null
+      disable_css: false
+      entity_classes: all_classes
+      settings:
+        wrappers:
+          ds_content: div
+        outer_wrapper: div
+        attributes: ''
+        link_attribute: ''
+        link_custom: ''
+        classes:
+          layout_class: {  }
+    regions:
+      ds_content:
+        - field_profile_first_name
+        - field_profile_last_name
+id: profile.profile.custom_compact
+targetEntityType: profile
+bundle: profile
+mode: custom_compact
+content:
+  field_profile_first_name:
+    type: string
+    weight: 0
+    region: ds_content
+    label: hidden
+    settings:
+      link_to_entity: false
+    third_party_settings: {  }
+  field_profile_last_name:
+    type: string
+    weight: 1
+    region: ds_content
+    label: hidden
+    settings:
+      link_to_entity: false
+    third_party_settings: {  }
+hidden:
+  field_cover_photo: true
+  field_preferred_broker: true
+  field_profile_address: true
+  field_profile_expertise: true
+  field_profile_function: true
+  field_profile_image: true
+  field_profile_interests: true
+  field_profile_organization: true
+  field_profile_phone_number: true
+  field_profile_profile_tag: true
+  field_profile_self_introduction: true
+  field_profile_show_email: true

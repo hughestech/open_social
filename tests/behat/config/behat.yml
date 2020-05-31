@@ -1,6 +1,6 @@
 default:
   autoload:
-    '': /var/www/html/profiles/contrib/social/tests/behat/features/bootstrap
+    '': /opt/app-root/src/html/profiles/contrib/open_social/tests/behat/features/bootstrap
   suites:
     default:
       parameters:
@@ -10,19 +10,24 @@ default:
             password: 'admin'
             mail: 'info+admin@example.com'
       paths:
-        features: '/var/www/html/profiles/contrib/social/tests/behat/features'
-        bootstrap: '/var/www/html/profiles/contrib/social/tests/behat/features/bootstrap'
+        features: '/opt/app-root/src/html/profiles/contrib/open_social/tests/behat/features'
+        bootstrap: '/opt/app-root/src/html/profiles/contrib/open_social/tests/behat/features/bootstrap'
       contexts:
+        - ApiFeatureContext
         - FeatureContext
         - SocialDrupalContext
         - SocialMinkContext
+        - Drupal\DrupalExtension\Context\BatchContext
         - Drupal\DrupalExtension\Context\MessageContext
         - PostContext
         - EmailContext
+        - Ubirak\RestApiBehatExtension\RestApiContext
+        - Ubirak\RestApiBehatExtension\Json\JsonContext
+        - Imbo\BehatApiExtension\Context\ApiContext
   extensions:
       Behat\MinkExtension:
         default_session: 'selenium2'
-        base_url: 'http://web/'
+        base_url: 'http://172.17.0.1:8080/'
         files_path: '/root/files/'
         goutte: ~
         selenium2:
@@ -31,7 +36,7 @@ default:
       Drupal\DrupalExtension:
         api_driver: 'drupal'
         drupal:
-          drupal_root: '/var/www/html'
+          drupal_root: '/opt/app-root/src/html'
         selectors:
           message_selector: '.alert'
           error_message_selector: '.alert.alert-danger'
@@ -50,3 +55,12 @@ default:
           'Modal footer': '.modal-footer'
           'WYSIWYG Image dialog': '.editor-image-dialog .form-actions'
           'WYSIWYG Embed dialog': '.url-embed-dialog .form-actions'
+      Ubirak\RestApiBehatExtension\Extension:
+        rest:
+          base_url: 'http://172.17.0.1:8080/'
+          store_response: true
+      Imbo\BehatApiExtension:
+        apiClient:
+          base_uri: 'http://172.17.0.1:8080/'
+          timeout: 180
+          verify: false

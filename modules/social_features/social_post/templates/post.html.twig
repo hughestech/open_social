@@ -17,11 +17,30 @@
 #}
 <div{{ attributes.addClass('card', 'post') }}>
 
-  {% if content.user_id %}
-    {{- content.user_id -}}
+  <div class="media">
+    <div class="media-left avatar">
+      {% if author_picture %}
+        {{ author_picture }}
+      {% endif %}
+    </div>
+    <div class="media-body">
+      <div class="media-heading text-m">
+        {% if content.user_id %}
+          {# content.user_id #}
+          <a href="{{ path('entity.profile.canonical', {'profile': user.id}) }}">{{ user.displayname }}</a>
+        {% endif %}
+        <div class="post-date">{{ date }}</div>
+      </div>
+    </div>
+  </div>
+
+  {% if content.field_pattern_title %}
+    {{- content.field_pattern_title -}}
   {% endif %}
 
-  {{ date }}
+  {% if content.field_pattern %}
+    {{- content.field_pattern -}}
+  {% endif %}
 
   {% if content.field_finfeed1 %}
     {{- content.field_finfeed1 -}}

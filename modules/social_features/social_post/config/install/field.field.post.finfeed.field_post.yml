@@ -1,0 +1,20 @@
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.post.field_post
+    - social_post.post_type.finfeed
+  module:
+    - text
+id: post.finfeed.field_post
+field_name: field_post
+entity_type: post
+bundle: finfeed
+label: Post
+description: ''
+required: false
+translatable: true
+default_value: {  }
+default_value_callback: ''
+settings: {  }
+field_type: text_long
